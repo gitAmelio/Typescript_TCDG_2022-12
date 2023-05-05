@@ -1,0 +1,5 @@
+npm isntall -g parcel-bundler
+npm install -g json-server
+# create db.json in root of project
+json-server -w db.json  
+npm install axios

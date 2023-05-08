@@ -32,14 +32,10 @@
 
 import { User } from './models/User';
 
-const user = new User({ name: 'new record', age: 0});
+const user = new User({ id: 1, name: 'newer name', age: 0});
 
-// user.fetch();
+user.on('save', () => {
+    console.log(user);
+})
 
-// setTimeout(() => {
-//     console.log(user);
-// }, 4000);
-
-// user.set({name:"NEW NAME", age: 9999});
-
-user.save()
+user.save();

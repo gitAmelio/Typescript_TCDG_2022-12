@@ -3,3 +3,6 @@ npm install -g json-server
 # create db.json in root of project
 json-server -w db.json  
 npm install axios
+# just to show how typescript will react with strict mode set to true
+tsc --init
+rm tsconfig.json

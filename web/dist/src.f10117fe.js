@@ -117,7 +117,104 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/models/Eventing.ts":[function(require,module,exports) {
+})({"src/models/Model.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Model = void 0;
+var Model = /** @class */function () {
+  function Model(attributes, events, sync) {
+    this.attributes = attributes;
+    this.events = events;
+    this.sync = sync;
+  }
+  Object.defineProperty(Model.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Model.prototype, "trigger", {
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Model.prototype, "get", {
+    get: function get() {
+      return this.attributes.get;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Model.prototype.set = function (update) {
+    this.attributes.set(update);
+    this.events.trigger('change');
+  };
+  Model.prototype.fetch = function () {
+    var _this = this;
+    var id = this.get('id');
+    if (typeof id !== 'number') {
+      throw new Error('Cannot fetch without an id');
+    }
+    this.sync.fetch(id).then(function (response) {
+      _this.set(response.data);
+    });
+  };
+  Model.prototype.save = function () {
+    var _this = this;
+    this.sync.save(this.attributes.getAll()).then(function (response) {
+      _this.trigger('save');
+    }).catch(function () {
+      _this.trigger('error');
+    });
+  };
+  return Model;
+}();
+exports.Model = Model;
+},{}],"src/models/Attributes.ts":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Attributes = void 0;
+var Attributes = /** @class */function () {
+  function Attributes(data) {
+    var _this = this;
+    this.data = data;
+    /**
+     * <K extends keyof T> set up a generic contraint
+     * where K can be one of the keys of T
+     * and K get passed as the key params
+     * and the function returns the value in T at K
+     */
+    this.get = function (key) {
+      return _this.data[key];
+    };
+  }
+  Attributes.prototype.set = function (update) {
+    Object.assign(this.data, update);
+  };
+  Attributes.prototype.getAll = function () {
+    return this.data;
+  };
+  return Attributes;
+}();
+exports.Attributes = Attributes;
+// const attrs = new Attributes<IUserProps>({
+//     id: 5,
+//     age: 20,
+//     name: 'whatever'
+// });
+// const name = attrs.get('name');
+// const age = attrs.get('age');
+// const id = attrs.get('id')
+},{}],"src/models/Eventing.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -5451,7 +5548,7 @@ exports.isCancel = isCancel;
 exports.CanceledError = CanceledError;
 exports.AxiosError = AxiosError;
 exports.Axios = Axios;
-},{"./lib/axios.js":"node_modules/axios/lib/axios.js"}],"src/models/Sync.ts":[function(require,module,exports) {
+},{"./lib/axios.js":"node_modules/axios/lib/axios.js"}],"src/models/ApiSync.ts":[function(require,module,exports) {
 "use strict";
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -5462,13 +5559,13 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Sync = void 0;
+exports.ApiSync = void 0;
 var axios_1 = __importDefault(require("axios"));
-var Sync = /** @class */function () {
-  function Sync(rootUrl) {
+var ApiSync = /** @class */function () {
+  function ApiSync(rootUrl) {
     this.rootUrl = rootUrl;
   }
-  Sync.prototype.fetch = function (id) {
+  ApiSync.prototype.fetch = function (id) {
     return axios_1.default.get("".concat(this.rootUrl, "/").concat(id));
     // .then((response: AxiosResponse): void =>{
     //     this.set(response.data);
@@ -5476,7 +5573,7 @@ var Sync = /** @class */function () {
     // );
   };
 
-  Sync.prototype.save = function (data) {
+  ApiSync.prototype.save = function (data) {
     // look in data for an ID
     var id = data.id;
     if (id) {
@@ -5487,111 +5584,54 @@ var Sync = /** @class */function () {
       return axios_1.default.post("".concat(this.rootUrl), data);
     }
   };
-  return Sync;
+  return ApiSync;
 }();
-exports.Sync = Sync;
-},{"axios":"node_modules/axios/index.js"}],"src/models/Attributes.ts":[function(require,module,exports) {
+exports.ApiSync = ApiSync;
+},{"axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.Attributes = void 0;
-var Attributes = /** @class */function () {
-  function Attributes(data) {
-    var _this = this;
-    this.data = data;
-    /**
-     * <K extends keyof T> set up a generic contraint
-     * where K can be one of the keys of T
-     * and K get passed as the key params
-     * and the function returns the value in T at K
-     */
-    this.get = function (key) {
-      return _this.data[key];
+var __extends = this && this.__extends || function () {
+  var _extendStatics = function extendStatics(d, b) {
+    _extendStatics = Object.setPrototypeOf || {
+      __proto__: []
+    } instanceof Array && function (d, b) {
+      d.__proto__ = b;
+    } || function (d, b) {
+      for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p];
     };
-  }
-  Attributes.prototype.set = function (update) {
-    Object.assign(this.data, update);
+    return _extendStatics(d, b);
   };
-  Attributes.prototype.getAll = function () {
-    return this.data;
+  return function (d, b) {
+    if (typeof b !== "function" && b !== null) throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+    _extendStatics(d, b);
+    function __() {
+      this.constructor = d;
+    }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
   };
-  return Attributes;
 }();
-exports.Attributes = Attributes;
-// const attrs = new Attributes<IUserProps>({
-//     id: 5,
-//     age: 20,
-//     name: 'whatever'
-// });
-// const name = attrs.get('name');
-// const age = attrs.get('age');
-// const id = attrs.get('id')
-},{}],"src/models/User.ts":[function(require,module,exports) {
-"use strict";
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.User = void 0;
-var Eventing_1 = require("./Eventing");
-var Sync_1 = require("./Sync");
+var Model_1 = require("./Model");
 var Attributes_1 = require("./Attributes");
+var Eventing_1 = require("./Eventing");
+var ApiSync_1 = require("./ApiSync");
 var rootUrl = 'http://localhost:3000/users';
-var User = /** @class */function () {
-  function User(attrs) {
-    this.events = new Eventing_1.Eventing();
-    this.sync = new Sync_1.Sync(rootUrl);
-    this.attributes = new Attributes_1.Attributes(attrs);
+var User = /** @class */function (_super) {
+  __extends(User, _super);
+  function User() {
+    return _super !== null && _super.apply(this, arguments) || this;
   }
-  Object.defineProperty(User.prototype, "on", {
-    get: function get() {
-      return this.events.on;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(User.prototype, "trigger", {
-    get: function get() {
-      return this.events.trigger;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(User.prototype, "get", {
-    get: function get() {
-      return this.attributes.get;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  User.prototype.set = function (update) {
-    this.attributes.set(update);
-    this.events.trigger('change');
-  };
-  User.prototype.fetch = function () {
-    var _this = this;
-    var id = this.get('id');
-    if (typeof id !== 'number') {
-      throw new Error('Cannot fetch without an id');
-    }
-    this.sync.fetch(id).then(function (response) {
-      _this.set(response.data);
-    });
-  };
-  User.prototype.save = function () {
-    var _this = this;
-    this.sync.save(this.attributes.getAll()).then(function (response) {
-      _this.trigger('save');
-    }).catch(function () {
-      _this.trigger('error');
-    });
+  User.buildUser = function (attrs) {
+    // serve pre-configured instance of User
+    return new User(new Attributes_1.Attributes(attrs), new Eventing_1.Eventing(), new ApiSync_1.ApiSync(rootUrl));
   };
   return User;
-}();
+}(Model_1.Model);
 exports.User = User;
-},{"./Eventing":"src/models/Eventing.ts","./Sync":"src/models/Sync.ts","./Attributes":"src/models/Attributes.ts"}],"src/index.ts":[function(require,module,exports) {
+},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./Eventing":"src/models/Eventing.ts","./ApiSync":"src/models/ApiSync.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
 // import { User } from './models/User';
@@ -5620,15 +5660,13 @@ Object.defineProperty(exports, "__esModule", {
 // axios.get('http://localhost:3000/users/1');
 // ------------ 3
 var User_1 = require("./models/User");
-var user = new User_1.User({
-  id: 1,
-  name: 'newer name',
-  age: 0
+var user = User_1.User.buildUser({
+  id: 1
 });
-user.on('save', function () {
+user.on('change', function () {
   console.log(user);
 });
-user.save();
+user.fetch();
 },{"./models/User":"src/models/User.ts"}],"../../../../../../../../usr/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -5654,7 +5692,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34867" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41899" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

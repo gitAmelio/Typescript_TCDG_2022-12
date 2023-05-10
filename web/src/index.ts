@@ -1,41 +1,12 @@
-// import { User } from './models/User';
+import { UserForm } from './views/UserForm';
+import { User } from './models/User'
 
-// const user = new User({ name: 'myname', age: 20});
+const user = User.buildUser({ name: 'Name', age: 20});
 
-// user.on('change', () => {
-//     console.log('Change #1');
-// });
-// user.on('change', () => {
-//     console.log('Change #2');
-// });
-// user.on('save', () => {
-//     console.log('Save was triggered')
-// })
+const root = document.getElementById('root');
 
-// user.on('someEvent', () => {});
+if (!root) throw new Error('Root element not found');
 
-// user.trigger('change')
-// user.trigger('save')
+const userForm = new UserForm( root, user);
 
-// ------------ 2
-
-// import axios from 'axios'
-
-// // axios.post('http://localhost:3000/users', {
-// //     name: 'myname',
-// //     age: 20
-// // });
-
-// axios.get('http://localhost:3000/users/1');
-
-// ------------ 3
-
-import { User } from './models/User';
-
-const user = User.buildUser({id: 1});
-
-user.on('change', () => {
-    console.log(user);
-})
-
-user.fetch();
+userForm.render();

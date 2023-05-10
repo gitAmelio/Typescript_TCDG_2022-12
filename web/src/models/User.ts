@@ -2,6 +2,7 @@ import { Model } from './Model';
 import { Attributes } from './Attributes';
 import { Eventing } from './Eventing';
 import { ApiSync } from './ApiSync';
+import { Collection } from './Collection';
 
 export interface IUserProps {
     // (?) is to make properties optional
@@ -20,6 +21,18 @@ export class User extends Model<IUserProps> {
             new Eventing(),
             new ApiSync<IUserProps>(rootUrl)
         )
+    }
+
+    static buildUserCollection(): Collection<User, IUserProps> {
+        return new Collection<User, IUserProps>(
+            rootUrl,
+            (json: IUserProps) => User.buildUser(json)
+        );
+    }
+
+    setRandomAge(): void {
+        const age = Math.round(Math.random() * 200);
+        this.set({age})
     }
 }
 

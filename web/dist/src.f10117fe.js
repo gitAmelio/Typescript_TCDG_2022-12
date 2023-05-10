@@ -117,7 +117,105 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/models/Model.ts":[function(require,module,exports) {
+})({"src/views/UserForm.ts":[function(require,module,exports) {
+"use strict";
+
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.UserForm = void 0;
+var UserForm = /*#__PURE__*/function () {
+  function UserForm(parent, model) {
+    var _this = this;
+    _classCallCheck(this, UserForm);
+    this.parent = parent;
+    this.model = model;
+    this.onSetAgeClick = function () {
+      _this.model.setRandomAge();
+    };
+    this.onSetNameClick = function () {
+      var input = _this.parent.querySelector('input');
+      if (!input) return; // Gaurd against null
+      var name = input.value;
+      _this.model.set({
+        name: name
+      });
+    };
+    this.bindModel();
+  }
+  _createClass(UserForm, [{
+    key: "bindModel",
+    value: function bindModel() {
+      var _this2 = this;
+      this.model.on('change', function () {
+        _this2.render();
+      });
+    }
+  }, {
+    key: "eventsMap",
+    value: function eventsMap() {
+      return {
+        // 'click:button': this.onButtonClick,
+        // 'mouseenter:h1': this.onHeaderHover,
+        // 'drag:div': this.onDragDiv
+        'click:.set-age': this.onSetAgeClick,
+        'click:.set-name': this.onSetNameClick
+      };
+    }
+    // onHeaderHover(): void {
+    //     console.log('H1 was hovered over');
+    // }
+    // onButtonClick(): void {
+    //     console.log('Hi there')
+    // }
+  }, {
+    key: "template",
+    value: function template() {
+      return "\n            <div>\n                <h1>User Form</h1>\n                <div>User name: ".concat(this.model.get('name'), "</div>\n                <div>User age: ").concat(this.model.get('age'), "</div>\n                <input />\n                <button class=\"set-name\">Change Name</button>\n                <button class=\"set-age\">Set Random Age</button>\n            </div>\n        ");
+    }
+  }, {
+    key: "bindEvents",
+    value: function bindEvents(fragment) {
+      var eventsMap = this.eventsMap();
+      var _loop = function _loop(eventKey) {
+        var _eventKey$split = eventKey.split(':'),
+          _eventKey$split2 = _slicedToArray(_eventKey$split, 2),
+          eventName = _eventKey$split2[0],
+          selector = _eventKey$split2[1];
+        fragment.querySelectorAll(selector).forEach(function (element) {
+          element.addEventListener(eventName, eventsMap[eventKey]);
+        });
+      };
+      for (var eventKey in eventsMap) {
+        _loop(eventKey);
+      }
+    }
+  }, {
+    key: "render",
+    value: function render() {
+      this.parent.innerHTML = '';
+      var templateElement = document.createElement('template');
+      templateElement.innerHTML = this.template();
+      this.bindEvents(templateElement.content);
+      this.parent.append(templateElement.content);
+    }
+  }]);
+  return UserForm;
+}();
+exports.UserForm = UserForm;
+},{}],"src/models/Model.ts":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -129,28 +227,26 @@ var Model = /** @class */function () {
     this.attributes = attributes;
     this.events = events;
     this.sync = sync;
+    /**
+     * The long way
+     *
+     * get on() {
+     *     return this.events.on;
+     * }
+     *
+     * get trigger() {
+     *     return this.events.trigger;
+     * }
+     *
+     * get get() {
+     *     return this.attributes.get;
+     * }
+     */
+    // This is possible because the Model is pre-configured when execution reached the following code
+    this.on = this.events.on;
+    this.trigger = this.events.trigger;
+    this.get = this.attributes.get;
   }
-  Object.defineProperty(Model.prototype, "on", {
-    get: function get() {
-      return this.events.on;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(Model.prototype, "trigger", {
-    get: function get() {
-      return this.events.trigger;
-    },
-    enumerable: false,
-    configurable: true
-  });
-  Object.defineProperty(Model.prototype, "get", {
-    get: function get() {
-      return this.attributes.get;
-    },
-    enumerable: false,
-    configurable: true
-  });
   Model.prototype.set = function (update) {
     this.attributes.set(update);
     this.events.trigger('change');
@@ -5587,7 +5683,59 @@ var ApiSync = /** @class */function () {
   return ApiSync;
 }();
 exports.ApiSync = ApiSync;
-},{"axios":"node_modules/axios/index.js"}],"src/models/User.ts":[function(require,module,exports) {
+},{"axios":"node_modules/axios/index.js"}],"src/models/Collection.ts":[function(require,module,exports) {
+"use strict";
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.Collection = void 0;
+var axios_1 = __importDefault(require("axios"));
+var Eventing_1 = require("./Eventing");
+/**
+ * T is the type of model it contains
+ * K is the interface for the return data
+ */
+var Collection = /** @class */function () {
+  function Collection(rootUrl, deserialize) {
+    this.rootUrl = rootUrl;
+    this.deserialize = deserialize;
+    this.models = [];
+    this.events = new Eventing_1.Eventing();
+  }
+  Object.defineProperty(Collection.prototype, "on", {
+    get: function get() {
+      return this.events.on;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Object.defineProperty(Collection.prototype, "trigger", {
+    get: function get() {
+      return this.events.trigger;
+    },
+    enumerable: false,
+    configurable: true
+  });
+  Collection.prototype.fetch = function () {
+    var _this = this;
+    axios_1.default.get(this.rootUrl).then(function (response) {
+      response.data.forEach(function (value) {
+        var model = _this.deserialize(value);
+        _this.models.push(model);
+      });
+      _this.trigger('change');
+    });
+  };
+  return Collection;
+}();
+exports.Collection = Collection;
+},{"axios":"node_modules/axios/index.js","./Eventing":"src/models/Eventing.ts"}],"src/models/User.ts":[function(require,module,exports) {
 "use strict";
 
 var __extends = this && this.__extends || function () {
@@ -5618,6 +5766,7 @@ var Model_1 = require("./Model");
 var Attributes_1 = require("./Attributes");
 var Eventing_1 = require("./Eventing");
 var ApiSync_1 = require("./ApiSync");
+var Collection_1 = require("./Collection");
 var rootUrl = 'http://localhost:3000/users';
 var User = /** @class */function (_super) {
   __extends(User, _super);
@@ -5628,46 +5777,37 @@ var User = /** @class */function (_super) {
     // serve pre-configured instance of User
     return new User(new Attributes_1.Attributes(attrs), new Eventing_1.Eventing(), new ApiSync_1.ApiSync(rootUrl));
   };
+  User.buildUserCollection = function () {
+    return new Collection_1.Collection(rootUrl, function (json) {
+      return User.buildUser(json);
+    });
+  };
+  User.prototype.setRandomAge = function () {
+    var age = Math.round(Math.random() * 200);
+    this.set({
+      age: age
+    });
+  };
   return User;
 }(Model_1.Model);
 exports.User = User;
-},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./Eventing":"src/models/Eventing.ts","./ApiSync":"src/models/ApiSync.ts"}],"src/index.ts":[function(require,module,exports) {
+},{"./Model":"src/models/Model.ts","./Attributes":"src/models/Attributes.ts","./Eventing":"src/models/Eventing.ts","./ApiSync":"src/models/ApiSync.ts","./Collection":"src/models/Collection.ts"}],"src/index.ts":[function(require,module,exports) {
 "use strict";
 
-// import { User } from './models/User';
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-// const user = new User({ name: 'myname', age: 20});
-// user.on('change', () => {
-//     console.log('Change #1');
-// });
-// user.on('change', () => {
-//     console.log('Change #2');
-// });
-// user.on('save', () => {
-//     console.log('Save was triggered')
-// })
-// user.on('someEvent', () => {});
-// user.trigger('change')
-// user.trigger('save')
-// ------------ 2
-// import axios from 'axios'
-// // axios.post('http://localhost:3000/users', {
-// //     name: 'myname',
-// //     age: 20
-// // });
-// axios.get('http://localhost:3000/users/1');
-// ------------ 3
+var UserForm_1 = require("./views/UserForm");
 var User_1 = require("./models/User");
 var user = User_1.User.buildUser({
-  id: 1
+  name: 'Name',
+  age: 20
 });
-user.on('change', function () {
-  console.log(user);
-});
-user.fetch();
-},{"./models/User":"src/models/User.ts"}],"../../../../../../../../usr/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+var root = document.getElementById('root');
+if (!root) throw new Error('Root element not found');
+var userForm = new UserForm_1.UserForm(root, user);
+userForm.render();
+},{"./views/UserForm":"src/views/UserForm.ts","./models/User":"src/models/User.ts"}],"../../../../../../../../usr/lib/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -5692,7 +5832,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41899" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "41867" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

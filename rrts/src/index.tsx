@@ -5,8 +5,31 @@ interface AppProps {
     color?: string;
 }
 
+// interface AppState {
+//     counter: number;
+// }
+
+// functional component
+// const App = (props: AppProps): JSX.Element => {
+//     return <div>{props.color}</div>
+// }
+// ReactDOM.render(
+//     <App color="red"/>,
+//     document.querySelector('#root')
+// )
+
 class App extends React.Component<AppProps> {
+    
+//     // Typescript way
     state = { counter: 0 };
+
+//     //Javascript way needs a second type(AppState) 
+//     // constructor(props: AppProps) {
+//     //    super(props)
+
+//     //    this.state = { counter: 0 };
+//     // }
+
 
     onIncrement = (): void => {
         this.setState({ counter: this.state.counter + 1});
@@ -28,7 +51,6 @@ class App extends React.Component<AppProps> {
 }
 
 ReactDOM.render(
-    // <App color="red" />,
-    <App />,
+    <App/>,
     document.querySelector('#root')
 )

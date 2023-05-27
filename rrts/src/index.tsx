@@ -1,56 +1,32 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import ReactDOM from 'react-dom/client';
+import { createStore, applyMiddleware } from 'redux';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
 
-interface AppProps {
-    color?: string;
-}
+import { App  } from './components/App';
+import { reducers } from './reducures';
 
-// interface AppState {
-//     counter: number;
-// }
+const store = createStore(reducers, applyMiddleware(thunk));
 
-// functional component
-// const App = (props: AppProps): JSX.Element => {
-//     return <div>{props.color}</div>
-// }
+const root = ReactDOM.createRoot(document.getElementById("root")!);
+// const root = ReactDOM.createRoot(document.getElementById("root"));
+
+// import { AppClass } from './touchedOnClassAndFunctionalComponent';
+// import { AppFunctional } from './touchedOnClassAndFunctionalComponent';
+
+root.render(
+    <React.StrictMode>
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
+)
+
 // ReactDOM.render(
-//     <App color="red"/>,
+//     <Provider store={store}>
+//         <App />
+//     </Provider>
+//     ,
 //     document.querySelector('#root')
 // )
-
-class App extends React.Component<AppProps> {
-    
-//     // Typescript way
-    state = { counter: 0 };
-
-//     //Javascript way needs a second type(AppState) 
-//     // constructor(props: AppProps) {
-//     //    super(props)
-
-//     //    this.state = { counter: 0 };
-//     // }
-
-
-    onIncrement = (): void => {
-        this.setState({ counter: this.state.counter + 1});
-    }
-
-    onDecrement = (): void => {
-        this.setState({ counter: this.state.counter - 1});
-    }
-
-    render () {
-        return (
-            <div>
-                <button onClick={this.onIncrement}>Increment</button>
-                <button onClick={this.onDecrement}>Decrement</button>
-                {this.state.counter}
-            </div>
-        )
-    }
-}
-
-ReactDOM.render(
-    <App/>,
-    document.querySelector('#root')
-)
